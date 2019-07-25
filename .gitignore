@@ -143,3 +143,10 @@ docs/_book
 # TODO: where does this rule come from?
 test/
 
+.idea/compiler.xml
+.idea/encodings.xml
+.idea/inspectionProfiles/
+.idea/misc.xml
+.idea/vcs.xml
+__pycache__/
+dms.py
