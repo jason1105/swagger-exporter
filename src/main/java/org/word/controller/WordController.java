@@ -10,6 +10,7 @@ import org.word.dto.Table;
 import org.word.service.WordService;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by XiuYin.Cui on 2018/1/11.
@@ -39,6 +40,7 @@ public class WordController {
     }
 
 
+    @Deprecated
     @RequestMapping("/toWord")
     public String toWord(Model model, @ModelAttribute(value="swaggerUrl") String swaggerUrl) {
         List<Table> tables = tableService.tableList(swaggerUrl);
@@ -46,5 +48,16 @@ public class WordController {
         model.addAttribute("definitions", tableService.getDefinitions(swaggerUrl));
         model.addAttribute("serviceName", tableService.getServiceName(swaggerUrl));
         return "word";
+    }
+
+    @RequestMapping("/toWordFolded")
+    public String toWordFolded(Model model, @ModelAttribute(value="swaggerUrl") String swaggerUrl) {
+        log.info(">>>>>>swaggerUrl: " + swaggerUrl);
+
+        Map<String, List<Table>> controllerMap = tableService.controllerMap(swaggerUrl);
+        model.addAttribute("controllerMap", controllerMap);
+        model.addAttribute("definitions", tableService.getDefinitions(swaggerUrl));
+        model.addAttribute("serviceName", tableService.getServiceName(swaggerUrl));
+        return "wordFolded";
     }
 }

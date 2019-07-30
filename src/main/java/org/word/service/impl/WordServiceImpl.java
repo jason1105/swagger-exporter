@@ -90,7 +90,7 @@ public class WordServiceImpl implements WordService {
                         // 4. 大标题（类说明）
                         String title = String.valueOf(((List) content.get("tags")).get(0));
 
-                        // if exist "tenant-controller", break
+                        // if exist any of controller what existed in dependencies, then break
                         if (ignoreControllers.contains(title)) {
                             continue;
                         }
@@ -205,6 +205,26 @@ public class WordServiceImpl implements WordService {
             log.error("parse error", e);
         }
         return result;
+    }
+
+    @Override
+    public Map<String, List<Table>> controllerMap(String swaggerUrl) {
+
+        List<Table> tableList = tableList(swaggerUrl);
+
+        Map<String, List<Table>> tableMap = new HashMap<>();
+
+        for (int i = 0; i < tableList.size(); i++) {
+            Table table = tableList.get(i);
+
+            List<Table> tableListInMap = tableMap.getOrDefault(table.getTitle(), new ArrayList<>());
+
+            tableListInMap.add(table);
+
+            tableMap.put(table.getTitle(), tableListInMap);
+        }
+
+        return tableMap;
     }
 
     @Override
