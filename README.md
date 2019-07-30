@@ -1,4 +1,4 @@
-Export swagger.
+将Swagger API 转为 Word 文档的工具.
 
 ### 生成文档
 1. 运行应用
