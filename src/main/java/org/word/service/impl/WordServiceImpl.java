@@ -56,7 +56,11 @@ public class WordServiceImpl implements WordService {
     @Override
     public List<Table> tableList(String swaggerUrl) {
 
+        StringBuilder ____invalidDocList = new StringBuilder("\n");
+
         this.swaggerUrl = swaggerUrl;
+
+        ____invalidDocList.append("\n ==== " + getServiceName(swaggerUrl) + " ====\n");
 
         List<Table> result = new ArrayList<>();
         try {
@@ -87,7 +91,7 @@ public class WordServiceImpl implements WordService {
 
                         Map.Entry<String, LinkedHashMap> httpMethod = httpMethods.next();
                         Map<String, Object> content = httpMethod.getValue();
-                        // 4. 大标题（类说明）
+                        // 4. 大标题（类说明） Controller
                         String title = String.valueOf(((List) content.get("tags")).get(0));
 
                         // if exist any of controller what existed in dependencies, then break
@@ -97,6 +101,12 @@ public class WordServiceImpl implements WordService {
 
                         // 5.小标题 （方法说明）
                         String tag = String.valueOf(content.get("summary"));
+
+                        if (!isContainChinese(tag)) {
+//                            ____invalidDocList.append(url).append("\t\tcode: ").append(title).append(".").append(tag).append("()").append("\n");
+                            ____invalidDocList.append(url).append(" [").append(httpMethod.getKey()).append("] ").append(title).append("\n");
+                        }
+
                         // 6.接口描述
                         String description = String.valueOf(content.get("description"));
 
@@ -204,6 +214,9 @@ public class WordServiceImpl implements WordService {
         } catch (Exception e) {
             log.error("parse error", e);
         }
+
+        log.info(____invalidDocList.toString());
+
         return result;
     }
 
@@ -349,6 +362,21 @@ public class WordServiceImpl implements WordService {
 
     }
 
+    /**
+     * 是否包含中文
+     *
+     * @param str
+     * @return
+     */
+    public boolean isContainChinese(String str) {
+
+        Pattern pattern = Pattern.compile("[\\u4e00-\\u9fa5]");
+
+        Matcher matcher = pattern.matcher(str);
+
+        return  matcher.find();
+    }
+
     public String toString(Object obj) {
         if (null != obj) {
             return obj.toString();
@@ -375,11 +403,17 @@ public class WordServiceImpl implements WordService {
                 ret = toString(schema.get("$ref"));
             } else {
 
-                if ("string".equals(toString(type))) {
+                if ("array".equals(toString(type))) {
+                    ret = "array "+ toString(((Map)schema.get("items")).get("$ref"));
+                } else {
+                    ret = toString(type);
+                }
+
+                /*if ("string".equals(toString(type))) {
                     ret = "string";
                 } else {
                     ret = toString(((Map)schema.get("items")).get("$ref"));
-                }
+                }*/
 
             }
 
